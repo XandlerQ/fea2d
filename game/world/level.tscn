@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://dn4iaeddm5iol"]
+
+[ext_resource type="PackedScene" uid="uid://y0gefryo127j" path="res://game/entity/player/player.tscn" id="1_2q6dc"]
+[ext_resource type="Script" uid="uid://bkhqwlrunm20r" path="res://game/world/level.gd" id="1_w7c3h"]
+[ext_resource type="Texture2D" uid="uid://xr518t68maav" path="res://ext/sprites/tiles/tech/grid_1m_grey.png" id="2_w8frs"]
+[ext_resource type="Script" uid="uid://b1c5pl4o7fkkf" path="res://game/object/physics_object/physics_object_2d.gd" id="4_ii5h2"]
+[ext_resource type="Script" uid="uid://chqk3txiu5ojg" path="res://game/combat/components/hurtbox_2d.gd" id="4_rcri0"]
+[ext_resource type="Texture2D" uid="uid://d2gmbmaajxdsk" path="res://ext/sprites/entities/agent.png" id="5_ii5h2"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ii5h2"]
+friction = 0.4
+bounce = 1.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ii5h2"]
+radius = 17.029387
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2dd1r"]
+radius = 16.03122
+
+[node name="Level" type="Node2D" unique_id=1435011599]
+script = ExtResource("1_w7c3h")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1618893080]
+texture_repeat = 2
+texture = ExtResource("2_w8frs")
+region_enabled = true
+region_rect = Rect2(0, 0, 1024, 1024)
+
+[node name="Player" parent="." unique_id=675430024 instance=ExtResource("1_2q6dc")]
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1014010782]
+zoom = Vector2(4, 4)
+
+[node name="PhysicsObject2D" type="RigidBody2D" parent="." unique_id=331666556 node_paths=PackedStringArray("hurtbox")]
+position = Vector2(0, -64)
+mass = 5.0
+physics_material_override = SubResource("PhysicsMaterial_ii5h2")
+gravity_scale = 0.0
+linear_damp_mode = 1
+linear_damp = 3.0
+script = ExtResource("4_ii5h2")
+hurtbox = NodePath("Hurtbox2D")
+metadata/_custom_type_script = "uid://b1c5pl4o7fkkf"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PhysicsObject2D" unique_id=1548569663]
+shape = SubResource("CircleShape2D_ii5h2")
+
+[node name="Hurtbox2D" type="Area2D" parent="PhysicsObject2D" unique_id=1604191772 node_paths=PackedStringArray("hbOwner")]
+script = ExtResource("4_rcri0")
+hbOwner = NodePath("..")
+metadata/_custom_type_script = "uid://chqk3txiu5ojg"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PhysicsObject2D/Hurtbox2D" unique_id=1123887835]
+shape = SubResource("CircleShape2D_2dd1r")
+
+[node name="Sprite2D" type="Sprite2D" parent="PhysicsObject2D/Hurtbox2D" unique_id=296918561]
+scale = Vector2(2, 2)
+texture = ExtResource("5_ii5h2")

@@ -1,0 +1,104 @@
+[gd_scene format=3 uid="uid://buvgpgvki638m"]
+
+[ext_resource type="Script" uid="uid://dh3oeod6xh87w" path="res://game/weapon/weapon.gd" id="1_jej8l"]
+[ext_resource type="Resource" uid="uid://cmadmhq6symky" path="res://game/weapon/test_stats.tres" id="2_njmmr"]
+[ext_resource type="Script" uid="uid://dorwkeoxo1tp3" path="res://game/weapon/components/c_weapon_movement_rotation.gd" id="3_iyg5g"]
+[ext_resource type="Texture2D" uid="uid://7blk5u4h20lv" path="res://ext/sprites/weapons/melee/16_shortsword.png" id="3_kc8d8"]
+[ext_resource type="Script" uid="uid://c7eb0t2ouwkrs" path="res://core/state_machine/fsml.gd" id="4_lopa8"]
+[ext_resource type="Script" uid="uid://bye52yawlu0li" path="res://game/weapon/states/movement/st_weapon_movement_idle.gd" id="5_xmlwb"]
+[ext_resource type="Script" uid="uid://lrgvklvfe0ws" path="res://game/weapon/states/movement/st_weapon_movement_return.gd" id="6_23vfj"]
+[ext_resource type="Script" uid="uid://cd6jgbbukvfut" path="res://game/weapon/states/movement/st_weapon_movement_attack.gd" id="7_05j3y"]
+[ext_resource type="Script" uid="uid://bo243142qd0rq" path="res://game/combat/components/hitbox_2d.gd" id="9_1d4ef"]
+[ext_resource type="Script" uid="uid://cmr7qykj277ky" path="res://core/effects/visual/visual_trail_simple.gd" id="10_vin2k"]
+[ext_resource type="Script" uid="uid://bbvtukej6jlc4" path="res://core/effects/visual/visual_trail_segment.gd" id="11_4wyu1"]
+
+[sub_resource type="Curve" id="Curve_2dd1r"]
+_data = [Vector2(0, 0), 0.0, 2.3799999, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_1d4ef"]
+_data = [Vector2(0, 0), 0.0, 2.38, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_2dd1r"]
+radius = 2.0
+height = 16.0
+
+[sub_resource type="Curve" id="Curve_38x62"]
+_data = [Vector2(0, 0), 0.0, 1.7679995, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Weapon" type="Node2D" unique_id=1865877970 node_paths=PackedStringArray("wmrc", "hitbox", "handle")]
+script = ExtResource("1_jej8l")
+wmrc = NodePath("CWeaponMovementRotation")
+hitbox = NodePath("Hitbox2D")
+handle = NodePath("Handle")
+weaponStats = ExtResource("2_njmmr")
+
+[node name="TrailMarker" type="Marker2D" parent="." unique_id=704847894]
+position = Vector2(14, 0)
+
+[node name="Handle" type="Marker2D" parent="." unique_id=760043122]
+position = Vector2(-4.0000005, 0)
+scale = Vector2(0.99999994, 0.99999994)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=717676400]
+position = Vector2(3, 0)
+rotation = 0.7853982
+texture = ExtResource("3_kc8d8")
+
+[node name="CWeaponMovementRotation" type="Node" parent="." unique_id=1093060732 node_paths=PackedStringArray("weapon", "fsmlM")]
+script = ExtResource("3_iyg5g")
+weapon = NodePath("..")
+fsmlM = NodePath("MovementFSML")
+metadata/_custom_type_script = "uid://dorwkeoxo1tp3"
+
+[node name="MovementFSML" type="Node" parent="CWeaponMovementRotation" unique_id=859083302 node_paths=PackedStringArray("initialState")]
+script = ExtResource("4_lopa8")
+initialState = NodePath("Idle")
+metadata/_custom_type_script = "uid://c7eb0t2ouwkrs"
+
+[node name="Idle" type="Node" parent="CWeaponMovementRotation/MovementFSML" unique_id=205614616 node_paths=PackedStringArray("object")]
+script = ExtResource("5_xmlwb")
+dragCurve = SubResource("Curve_2dd1r")
+drAng = 0.92
+wielderAngInh = 0.5
+object = NodePath("../..")
+metadata/_custom_type_script = "uid://bye52yawlu0li"
+
+[node name="Return" type="Node" parent="CWeaponMovementRotation/MovementFSML" unique_id=1838455419 node_paths=PackedStringArray("object")]
+script = ExtResource("6_23vfj")
+dragCurve = SubResource("Curve_1d4ef")
+drAng = 0.92
+wielderAngInh = 0.5
+object = NodePath("../..")
+metadata/_custom_type_script = "uid://lrgvklvfe0ws"
+
+[node name="Attack" type="Node" parent="CWeaponMovementRotation/MovementFSML" unique_id=601342622 node_paths=PackedStringArray("object")]
+script = ExtResource("7_05j3y")
+object = NodePath("../..")
+metadata/_custom_type_script = "uid://cd6jgbbukvfut"
+
+[node name="Hitbox2D" type="Area2D" parent="." unique_id=1276544612]
+scale = Vector2(0.99999994, 0.99999994)
+script = ExtResource("9_1d4ef")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox2D" unique_id=1686055005]
+position = Vector2(7.0000005, -1.4210855e-14)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_2dd1r")
+
+[node name="VisualTrailSimple" type="Node2D" parent="." unique_id=314703432 node_paths=PackedStringArray("emitterPoint", "vtSegment")]
+script = ExtResource("10_vin2k")
+emitterPoint = NodePath("../TrailMarker")
+vtSegment = NodePath("VisualTrailSegment")
+metadata/_custom_type_script = "uid://cmr7qykj277ky"
+
+[node name="VisualTrailSegment" type="Line2D" parent="VisualTrailSimple" unique_id=1115374556]
+width = 2.0
+width_curve = SubResource("Curve_38x62")
+default_color = Color(1, 1, 1, 0.34509805)
+script = ExtResource("11_4wyu1")
+pLifetime = 0.1
+maxPoints = 10
+metadata/_custom_type_script = "uid://bbvtukej6jlc4"
