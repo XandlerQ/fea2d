@@ -5,10 +5,13 @@ class_name State
 #region Signals
 ## Emitted when the state finishes and wants to transition to another state.
 ## For state driven transitions.
-signal finished(oldState: State, targetStatePath: String, data: Dictionary)
+signal finished(oldState: State, targetStateId: StringName, data: Dictionary)
 #endregion
 
 #region Exports
+## Stable identifier used by state machines and transition callers.
+## Unlike the node name, this can remain unchanged when reorganizing a scene.
+@export var stateId: StringName = &""
 
 #endregion
 
@@ -37,7 +40,7 @@ func physics_update(_delta: float) -> void:
 
 ## Called by the state machine upon changing the active state. The `data` parameter
 ## is a dictionary with arbitrary data the state can use to initialize itself.
-func enter(_previousState: String, _data: Dictionary = {}) -> void:
+func enter(_previousStateId: StringName, _data: Dictionary = {}) -> void:
 	completed = false
 	pass
 

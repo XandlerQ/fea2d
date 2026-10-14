@@ -1,3 +1,4 @@
+@tool
 extends Area2D
 ## Universal 2D hurtbox class.
 ## Receives attack contexts and forwards them to interested systems.
@@ -38,6 +39,14 @@ func receive_collision_impact_pcr2d(collisionResult: PhysicsCollisionResult2D) -
 	
 	collision_impact_received_pcr2d.emit(collisionResult)
 	return true
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not hbOwner:
+		warnings.append("A hurtbox owner is required.")
+	if not get_children().any(func(child: Node): return child is CollisionShape2D or child is CollisionPolygon2D):
+		warnings.append("A collision shape or polygon child is required.")
+	return warnings
 #endregion
 
 #region Private

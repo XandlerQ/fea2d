@@ -1,9 +1,12 @@
+@tool
 extends Node
 ## Weapon movement/rotation component.
 ## Holds and controls both wPosition
 ## and wVelocity of a weapon, as well as
 ## weapon rotaiton.
 class_name CWeaponMovementRotation
+
+const STATE_ATTACK: StringName = &"attack"
 
 #region Signals
 
@@ -13,8 +16,8 @@ class_name CWeaponMovementRotation
 ## Controlled weapon
 @export var weapon: Weapon = null
 
-## Weapon movement Finite State Machine
-@export var fsmlM: FSML = null
+## Scene-owned weapon movement finite state machine.
+@onready var fsmlM: FSML = get_node_or_null("%MovementFSML") as FSML
 #endregion
 
 #region State
@@ -47,11 +50,29 @@ var springAngularVelocity: float = 0.
 
 ## Weapon rotation inertia
 var inertia: float = 1.
+## Prevents physics updates until parent-owned scene references are ready.
+var initialized: bool = false
 #endregion
 
 #region Methods
 #region System
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+
+	assert(weapon != null,
+		("Weapon controlled by CWeaponMovementRotation must be non null.")
+	)
+
+	# Child _ready callbacks run before the parent's @onready assignments.
+	# Wait for Weapon so its scene-owned Handle reference is available.
+	if not weapon.is_node_ready():
+		await weapon.ready
+
+	assert(weapon.handle != null,
+		("Scene-owned handle of Weapon must be non null.")
+	)
+
 	# Align the handle orientation before computing the initial origin position.
 	rotation = weapon.hand.global_rotation - get_handle_rotation_offset()
 	weapon.global_rotation = rotation
@@ -59,8 +80,12 @@ func _ready() -> void:
 	weapon.global_position = wPosition
 
 	inertia = weapon.movementInertia
+	initialized = true
 
 func _physics_process(delta: float) -> void:
+	if Engine.is_editor_hint() or not initialized:
+		return
+
 	fsmlM.physics_update(delta)
 	_control_object()
 #endregion
@@ -90,7 +115,7 @@ func apply_collision_response(result: PhysicsCollisionResult2D, side: PhysicsCol
 	if not result or not result.resolved or not fsmlM:
 		return
 	# Make sure that we are in the state that can be affected by a collision
-	if not fsmlM.get_state_name() == "Attack":
+	if fsmlM.get_state_id() != STATE_ATTACK:
 		return
 
 	var attackState: StWeaponMovementAttack = fsmlM.state as StWeaponMovementAttack
@@ -119,9 +144,19 @@ func apply_collision_response(result: PhysicsCollisionResult2D, side: PhysicsCol
 	# Call the control object method to apply the changes to the engine kinematic values
 	_control_object()
 
-func request_movement_state_change(newState: String, data: Dictionary = {}) -> void:
+func request_movement_state_change(newStateId: StringName, data: Dictionary = {}) -> void:
+	if not fsmlM or not fsmlM.state:
+		return
 	if fsmlM.state.is_interruptible() or (not fsmlM.state.is_interruptible() and fsmlM.state.completed):
-		fsmlM.change_state(fsmlM.state, newState, data)
+		fsmlM.change_state(fsmlM.state, newStateId, data)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not weapon:
+		warnings.append("A controlled Weapon is required.")
+	if not (get_node_or_null("%MovementFSML") is FSML):
+		warnings.append("A unique MovementFSML child is required.")
+	return warnings
 #endregion
 
 #region Private

@@ -1,3 +1,4 @@
+@tool
 extends Area2D
 ## Universal 2D hitbox class.
 ## Detects hurtboxes and reports collision information.
@@ -24,6 +25,9 @@ var _detectionEnabled: bool = true
 #region Methods
 #region System
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+
 	if not area_shape_entered.is_connected(_on_area_shape_entered):
 		area_shape_entered.connect(_on_area_shape_entered)
 #endregion
@@ -37,6 +41,12 @@ func set_detection_enabled(enabled: bool) -> void:
 ## Clears the remembered hurtboxes
 func clear_hit_memory() -> void:
 	lastHitTimeDict.clear()
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not get_children().any(func(child: Node): return child is CollisionShape2D or child is CollisionPolygon2D):
+		warnings.append("A collision shape or polygon child is required.")
+	return warnings
 
 #endregion
 

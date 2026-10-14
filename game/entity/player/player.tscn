@@ -27,10 +27,8 @@ radius = 8.0
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.44274807), -1.7611774, 0.0, 0, 0]
 point_count = 2
 
-[node name="Player" type="CharacterBody2D" unique_id=675430024 node_paths=PackedStringArray("lcRef", "rcRef")]
+[node name="Player" type="CharacterBody2D" unique_id=675430024]
 script = ExtResource("1_xg5q3")
-lcRef = NodePath("CEntityLocomotion")
-rcRef = NodePath("CEntityRotation")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1734462446]
 shape = SubResource("CircleShape2D_2dd1r")
@@ -51,31 +49,35 @@ script = ExtResource("5_vqr5b")
 pli = NodePath("../CPlayerLocomotionInput")
 cel = NodePath("../CEntityLocomotion")
 
-[node name="CEntityLocomotion" type="Node" parent="." unique_id=11193938 node_paths=PackedStringArray("entity", "fsml", "rcRef")]
+[node name="CEntityLocomotion" type="Node" parent="." unique_id=11193938 node_paths=PackedStringArray("entity", "rcRef")]
 script = ExtResource("5_ih27x")
 entity = NodePath("..")
-fsml = NodePath("LocomotionFSML")
 rcRef = NodePath("../CEntityRotation")
 
 [node name="LocomotionFSML" type="Node" parent="CEntityLocomotion" unique_id=192479242 node_paths=PackedStringArray("initialState")]
+unique_name_in_owner = true
 script = ExtResource("6_q5dhb")
 initialState = NodePath("Idle")
 
 [node name="Idle" type="Node" parent="CEntityLocomotion/LocomotionFSML" unique_id=977794275 node_paths=PackedStringArray("object")]
 script = ExtResource("8_vqr5b")
+stateId = &"idle"
 object = NodePath("../..")
 
 [node name="Walk" type="Node" parent="CEntityLocomotion/LocomotionFSML" unique_id=2103482589 node_paths=PackedStringArray("object")]
 script = ExtResource("9_w5y05")
+stateId = &"walk"
 object = NodePath("../..")
 
 [node name="Sprint" type="Node" parent="CEntityLocomotion/LocomotionFSML" unique_id=146371784 node_paths=PackedStringArray("object")]
 script = ExtResource("10_jw7m7")
+stateId = &"sprint"
 object = NodePath("../..")
 metadata/_custom_type_script = "uid://sskl87pb5gph"
 
 [node name="Dash" type="Node" parent="CEntityLocomotion/LocomotionFSML" unique_id=423293654 node_paths=PackedStringArray("object")]
 script = ExtResource("11_cawmy")
+stateId = &"dash"
 dashDuration = 0.11
 dashMagnitude = 360.0
 dashSpeedCurve = SubResource("Curve_2dd1r")
@@ -89,23 +91,25 @@ cel = NodePath("../CEntityLocomotion")
 cpai = NodePath("../CPlayerActionInput")
 metadata/_custom_type_script = "uid://c1mr4j4tn345w"
 
-[node name="CEntityRotation" type="Node" parent="." unique_id=829356750 node_paths=PackedStringArray("entity", "fsml")]
+[node name="CEntityRotation" type="Node" parent="." unique_id=829356750 node_paths=PackedStringArray("entity")]
 script = ExtResource("9_ih27x")
 entity = NodePath("..")
-fsml = NodePath("RotationFSML")
 
 [node name="RotationFSML" type="Node" parent="CEntityRotation" unique_id=930320857 node_paths=PackedStringArray("initialState")]
+unique_name_in_owner = true
 script = ExtResource("6_q5dhb")
 initialState = NodePath("TargetTHF")
 metadata/_custom_type_script = "uid://c7eb0t2ouwkrs"
 
 [node name="TargetTHF" type="Node" parent="CEntityRotation/RotationFSML" unique_id=1042209441 node_paths=PackedStringArray("object")]
 script = ExtResource("15_njf2w")
+stateId = &"target_thf"
 object = NodePath("../..")
 metadata/_custom_type_script = "uid://pnbiunwg4ym1"
 
 [node name="LookatTHF" type="Node" parent="CEntityRotation/RotationFSML" unique_id=794199346 node_paths=PackedStringArray("object")]
 script = ExtResource("16_jqx0h")
+stateId = &"look_at_thf"
 object = NodePath("../..")
 metadata/_custom_type_script = "uid://wjpiv3authl6"
 

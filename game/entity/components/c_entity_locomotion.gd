@@ -1,3 +1,4 @@
+@tool
 extends Node
 ## Entity locomotion component.
 ## Defines entity locomotion state.
@@ -37,8 +38,8 @@ enum CollisionMethod {
 
 ## Controlled entity.
 @export var entity: Entity = null
-## Locomotion Finite State Machine.
-@export var fsml: FSML = null
+## Scene-owned locomotion finite state machine.
+@onready var fsml: FSML = get_node_or_null("%LocomotionFSML") as FSML
 
 ## Rotation component
 @export var rcRef: CEntityRotation = null
@@ -64,6 +65,9 @@ var _lnzDirection: Vector2 = Vector2.RIGHT
 #region Methods
 #region System
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+
 	assert(entity != null, 
 		("Entity controlled by CEntityLocomotion must be non null.")
 	)
@@ -79,6 +83,9 @@ func _ready() -> void:
 	entity.rcRef = rcRef
 
 func _physics_process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+
 	fsml.physics_update(delta)
 	var hasCollision: bool = _control_object()
 	
@@ -93,9 +100,21 @@ func _physics_process(delta: float) -> void:
 #endregion
 
 #region Interface
-func request_state_change(newState: String, data: Dictionary = {}) -> void:
+func request_state_change(newStateId: StringName, data: Dictionary = {}) -> void:
+	if not fsml or not fsml.state:
+		return
 	if fsml.state.is_interruptible() or (not fsml.state.is_interruptible() and fsml.state.completed):
-		fsml.change_state(fsml.state, newState, data)
+		fsml.change_state(fsml.state, newStateId, data)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not entity:
+		warnings.append("A controlled Entity is required.")
+	if not (get_node_or_null("%LocomotionFSML") is FSML):
+		warnings.append("A unique LocomotionFSML child is required.")
+	if not rcRef:
+		warnings.append("An entity rotation component is required.")
+	return warnings
 #endregion
 
 #region Private

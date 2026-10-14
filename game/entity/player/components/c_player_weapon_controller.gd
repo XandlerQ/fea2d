@@ -1,5 +1,10 @@
+@tool
 extends Node
 class_name CPlayerWeaponController
+
+const STATE_IDLE: StringName = &"idle"
+const STATE_RETURN: StringName = &"return"
+const STATE_ATTACK: StringName = &"attack"
 
 #region Signals
 
@@ -31,9 +36,17 @@ class_name CPlayerWeaponController
 #region Methods
 #region System
 func _ready() -> void:
-	pass
+	if Engine.is_editor_hint():
+		return
+
+	assert(player != null, "Player of CPlayerWeaponController must be non null.")
+	assert(weapon != null, "Weapon of CPlayerWeaponController must be non null.")
+	assert(cpai != null, "CPlayerActionInput of CPlayerWeaponController must be non null.")
 
 func _physics_process(_delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+
 	if not weapon:
 		return
 	# Handle the weapon movement state change
@@ -43,10 +56,10 @@ func _physics_process(_delta: float) -> void:
 
 	if not attackInput:
 		if not weapon.wmrc.returned:
-			weapon.wmrc.request_movement_state_change("Return")
+			weapon.wmrc.request_movement_state_change(STATE_RETURN)
 			# print("Return")
 		else:
-			weapon.wmrc.request_movement_state_change("Idle")
+			weapon.wmrc.request_movement_state_change(STATE_IDLE)
 			# print("Idle")
 	else:
 		# For the player the weapon target is the global mouse position
@@ -54,7 +67,7 @@ func _physics_process(_delta: float) -> void:
 		# TODO: move to the player input component to handle controller input as well
 		weapon.wmrc.wTarget = cpai.get_targetted_point()
 
-		weapon.wmrc.request_movement_state_change("Attack")
+		weapon.wmrc.request_movement_state_change(STATE_ATTACK)
 		# print("Attack")
 	
 
@@ -73,6 +86,16 @@ func _physics_process(_delta: float) -> void:
 		var targetRotation: float = lerp_angle(weaponPosRotation, targetPRotation, tRRatio)
 
 		weapon.wmrc.target_rotation(targetRotation)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not player:
+		warnings.append("A Player reference is required.")
+	if not weapon:
+		warnings.append("A Weapon reference is required.")
+	if not cpai:
+		warnings.append("A player action input component is required.")
+	return warnings
 
 	
 #endregion

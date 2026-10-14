@@ -1,3 +1,4 @@
+@tool
 extends Node2D
 class_name Weapon
 
@@ -6,15 +7,15 @@ class_name Weapon
 #endregion
 
 #region Exports
-## Weapon movement and rotation component reference
-@export var wmrc: CWeaponMovementRotation = null
+## Scene-owned weapon movement and rotation component.
+@onready var wmrc: CWeaponMovementRotation = get_node_or_null("%CWeaponMovementRotation") as CWeaponMovementRotation
 
-## Weapon hitbox reference
-@export var hitbox: Hitbox2D = null
+## Scene-owned weapon hitbox.
+@onready var hitbox: Hitbox2D = get_node_or_null("%Hitbox2D") as Hitbox2D
 ## Handle Marker2D reference, used to infer idle weapon position.
 ## Namely the position of CoM is computed in a way so that the handle
 ## marker lies on in the hand of the wielder
-@export var handle: Marker2D = null
+@onready var handle: Marker2D = get_node_or_null("%Handle") as Marker2D
 
 ## Hand reference
 @export var hand: Hand = null
@@ -51,6 +52,9 @@ var angularVelocity: float = 0.
 #region Methods
 #region System
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+
 	top_level = true
 	assert(handle != null, 
 		("Marker2D handle of Weapon must be non null.")
@@ -71,7 +75,7 @@ func _ready() -> void:
 		hitbox.hurtbox_collision_detected.connect(_on_hitbox_hurtbox_collision_detected)
 	if not wmrc.fsmlM.state_changed.is_connected(_on_movement_state_changed):
 		wmrc.fsmlM.state_changed.connect(_on_movement_state_changed)
-	_on_movement_state_changed(wmrc.fsmlM.get_state_name())
+	_on_movement_state_changed(wmrc.fsmlM.get_state_id())
 
 	
 # func _physics_process(delta: float) -> void:
@@ -113,7 +117,8 @@ func generate_attack_context(targetObject: Node2D, relVel: Vector2) -> AttackCon
 	attackContext.attackStats = weaponStats
 
 	# TODO: more complicated damage computation system
-	# Compute the damage based on the relative velocity at the collisiom
+	# Compute the damage based on the relative velocity at the collision point
+	# taking the geometry of the weapon into account
 	attackContext.damage = weaponStats.damage * relVel.length()
 	
 	return attackContext
@@ -122,11 +127,29 @@ func generate_attack_context(targetObject: Node2D, relVel: Vector2) -> AttackCon
 func get_velocity_at_point(point: Vector2) -> Vector2:
 	var localPoint: Vector2 = point - global_position
 	return velocity + angularVelocity * Vector2(-localPoint.y, localPoint.x)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not (get_node_or_null("%CWeaponMovementRotation") is CWeaponMovementRotation):
+		warnings.append("A unique CWeaponMovementRotation child is required.")
+	if not (get_node_or_null("%Hitbox2D") is Hitbox2D):
+		warnings.append("A unique Hitbox2D child is required.")
+	if not (get_node_or_null("%Handle") is Marker2D):
+		warnings.append("A unique Handle marker is required.")
+	if not hand:
+		warnings.append("A wielding Hand is required.")
+	if not lcRef:
+		warnings.append("A wielder locomotion component is required.")
+	if not rcRef:
+		warnings.append("A wielder rotation component is required.")
+	if not weaponStats:
+		warnings.append("WeaponStats are required.")
+	return warnings
 #endregion
 
 #region Private
-func _on_movement_state_changed(stateName: String) -> void:
-	hitbox.set_detection_enabled(stateName == "Attack")
+func _on_movement_state_changed(stateId: StringName) -> void:
+	hitbox.set_detection_enabled(stateId == CWeaponMovementRotation.STATE_ATTACK)
 
 func _handle_collision_hit_physics(collisionInfo: CollisionInfo2D) -> PhysicsCollisionResult2D:
 	var result: PhysicsCollisionResult2D = PhysicsCollisionResult2D.new()

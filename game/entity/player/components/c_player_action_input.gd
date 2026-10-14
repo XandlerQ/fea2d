@@ -1,3 +1,4 @@
+@tool
 extends Node
 ## Defines an interface to get inputs
 ## for player actions.
@@ -27,6 +28,12 @@ func get_attack_pressed() -> bool:
 
 func get_targetted_point() -> Vector2:
 	return player.get_global_mouse_position()
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not player:
+		warnings.append("A Player reference is required.")
+	return warnings
 
 #endregion
 

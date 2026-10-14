@@ -193,7 +193,7 @@ func physics_update(delta: float) -> void:
 # 	# Handle the rotation
 # 	_perform_rotation_target_spring_wielder(delta, kAng, drAng, wielderAngInh)
 
-func enter(_previousState: String, _data := {}) -> void:
+func enter(_previousStateId: StringName, _data: Dictionary = {}) -> void:
 	object.returned = false
 	attackVel = Vector2.ZERO
 	object.springAngularVelocity = 0.

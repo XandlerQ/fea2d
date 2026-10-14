@@ -28,17 +28,15 @@ height = 16.0
 _data = [Vector2(0, 0), 0.0, 1.7679995, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[node name="Weapon" type="Node2D" unique_id=1865877970 node_paths=PackedStringArray("wmrc", "hitbox", "handle")]
+[node name="Weapon" type="Node2D" unique_id=1865877970]
 script = ExtResource("1_jej8l")
-wmrc = NodePath("CWeaponMovementRotation")
-hitbox = NodePath("Hitbox2D")
-handle = NodePath("Handle")
 weaponStats = ExtResource("2_njmmr")
 
 [node name="TrailMarker" type="Marker2D" parent="." unique_id=704847894]
 position = Vector2(14, 0)
 
 [node name="Handle" type="Marker2D" parent="." unique_id=760043122]
+unique_name_in_owner = true
 position = Vector2(-4.0000005, 0)
 scale = Vector2(0.99999994, 0.99999994)
 
@@ -47,15 +45,17 @@ position = Vector2(3, 0)
 rotation = 0.7853982
 texture = ExtResource("3_kc8d8")
 
-[node name="CWeaponMovementRotation" type="Node" parent="." unique_id=1093060732 node_paths=PackedStringArray("weapon", "fsmlM")]
+[node name="CWeaponMovementRotation" type="Node" parent="." unique_id=1093060732 node_paths=PackedStringArray("weapon")]
+unique_name_in_owner = true
 script = ExtResource("3_iyg5g")
 weapon = NodePath("..")
-fsmlM = NodePath("MovementFSML")
 metadata/_custom_type_script = "uid://dorwkeoxo1tp3"
 
 [node name="MovementFSML" type="Node" parent="CWeaponMovementRotation" unique_id=859083302 node_paths=PackedStringArray("initialState")]
+unique_name_in_owner = true
 script = ExtResource("4_lopa8")
 initialState = NodePath("Idle")
+manuallyDriven = true
 metadata/_custom_type_script = "uid://c7eb0t2ouwkrs"
 
 [node name="Idle" type="Node" parent="CWeaponMovementRotation/MovementFSML" unique_id=205614616 node_paths=PackedStringArray("object")]
@@ -64,6 +64,7 @@ dragCurve = SubResource("Curve_2dd1r")
 drAng = 0.92
 wielderAngInh = 0.5
 object = NodePath("../..")
+stateId = &"idle"
 metadata/_custom_type_script = "uid://bye52yawlu0li"
 
 [node name="Return" type="Node" parent="CWeaponMovementRotation/MovementFSML" unique_id=1838455419 node_paths=PackedStringArray("object")]
@@ -72,14 +73,17 @@ dragCurve = SubResource("Curve_1d4ef")
 drAng = 0.92
 wielderAngInh = 0.5
 object = NodePath("../..")
+stateId = &"return"
 metadata/_custom_type_script = "uid://lrgvklvfe0ws"
 
 [node name="Attack" type="Node" parent="CWeaponMovementRotation/MovementFSML" unique_id=601342622 node_paths=PackedStringArray("object")]
 script = ExtResource("7_05j3y")
 object = NodePath("../..")
+stateId = &"attack"
 metadata/_custom_type_script = "uid://cd6jgbbukvfut"
 
 [node name="Hitbox2D" type="Area2D" parent="." unique_id=1276544612]
+unique_name_in_owner = true
 scale = Vector2(0.99999994, 0.99999994)
 script = ExtResource("9_1d4ef")
 
@@ -88,14 +92,14 @@ position = Vector2(7.0000005, -1.4210855e-14)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_2dd1r")
 
-[node name="VisualTrailVelocity" type="Node2D" parent="." unique_id=1635182004 node_paths=PackedStringArray("emitterPoint", "velOwner", "refSegment")]
+[node name="VisualTrailVelocity" type="Node2D" parent="." unique_id=1635182004 node_paths=PackedStringArray("emitterPoint", "velOwner")]
 script = ExtResource("10_4wyu1")
 emitterPoint = NodePath("../TrailMarker")
 velOwner = NodePath("..")
-refSegment = NodePath("VisualTrailSegment")
 metadata/_custom_type_script = "uid://b8cpynv2yc4i"
 
 [node name="VisualTrailSegment" type="Line2D" parent="VisualTrailVelocity" unique_id=1115374556]
+unique_name_in_owner = true
 width = 2.0
 width_curve = SubResource("Curve_38x62")
 default_color = Color(1, 1, 1, 0.34509805)

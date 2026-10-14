@@ -1,3 +1,4 @@
+@tool
 extends Node
 ## Defines projectile movement and rotaiton behavior
 class_name CProjectileMovementRotation
@@ -44,19 +45,26 @@ var launched: bool = false
 #region Methods
 #region System
 func _physics_process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+
 	fsmlR.physics_update(delta)
 	fsmlM.physics_update(delta)
 	_control_object()
 #endregion
 
 #region Interface
-func request_movement_state_change(newState: String, data: Dictionary = {}) -> void:
+func request_movement_state_change(newStateId: StringName, data: Dictionary = {}) -> void:
+	if not fsmlM or not fsmlM.state:
+		return
 	if fsmlM.state.is_interruptible() or (not fsmlM.state.is_interruptible() and fsmlM.state.completed):
-		fsmlM.change_state(fsmlM.state, newState, data)
+		fsmlM.change_state(fsmlM.state, newStateId, data)
 
-func request_rotation_state_change(newState: String, data: Dictionary = {}) -> void:
+func request_rotation_state_change(newStateId: StringName, data: Dictionary = {}) -> void:
+	if not fsmlR or not fsmlR.state:
+		return
 	if fsmlR.state.is_interruptible() or (not fsmlR.state.is_interruptible() and fsmlR.state.completed):
-		fsmlR.change_state(fsmlR.state, newState, data)
+		fsmlR.change_state(fsmlR.state, newStateId, data)
 
 func launch(direction: Vector2, initialVelocity: Vector2 = Vector2.ZERO, initialInheritedVelocity: Vector2 = Vector2.ZERO) -> void:
 	# Save launch direction
@@ -65,6 +73,16 @@ func launch(direction: Vector2, initialVelocity: Vector2 = Vector2.ZERO, initial
 	velocity = initialInheritedVelocity + initialVelocity
 	# Switch the launch flag
 	launched = true
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not projectile:
+		warnings.append("A controlled Projectile is required.")
+	if not fsmlM:
+		warnings.append("A movement state machine is required.")
+	if not fsmlR:
+		warnings.append("A rotation state machine is required.")
+	return warnings
 #endregion
 
 #region Private

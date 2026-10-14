@@ -1,3 +1,4 @@
+@tool
 extends Node
 class_name CProjectileCaster
 
@@ -21,6 +22,9 @@ class_name CProjectileCaster
 #region Methods
 #region System
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+
 	# Search for the prjectile container in the tree
 	if not projectileContainer:
 		var containers := get_tree().get_nodes_in_group("projectile_containers")
@@ -46,6 +50,14 @@ func cast_projectile(attacker: Node, initialVelocity: Vector2 = Vector2.ZERO) ->
 
 	# # Make sure that the initial orientation is correct
 	# projectile.look_at(origin + launch_direction)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not projectilePackedScene:
+		warnings.append("A projectile PackedScene is required.")
+	if not projectileSpawnPoint:
+		warnings.append("A projectile spawn point is required.")
+	return warnings
 
 #endregion
 

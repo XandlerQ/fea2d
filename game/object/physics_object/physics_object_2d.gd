@@ -1,3 +1,4 @@
+@tool
 extends RigidBody2D
 ## Describes a rigid object affected by physics.
 ## An extension of an existing RigidBody2D class
@@ -8,7 +9,8 @@ class_name PhysicsObject2D
 #endregion
 
 #region Exports
-@export var hurtbox: Hurtbox2D = null
+## Scene-owned hurtbox.
+@onready var hurtbox: Hurtbox2D = get_node_or_null("%Hurtbox2D") as Hurtbox2D
 #endregion
 
 #region State
@@ -22,6 +24,9 @@ var _pendingPosCor: Vector2 = Vector2.ZERO
 #region Methods
 #region System
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+
 	if hurtbox:
 		if not hurtbox.collision_impact_received_pcr2d.is_connected(_on_hurtbox_collision_impact_received_pcr2d):
 			hurtbox.collision_impact_received_pcr2d.connect(_on_hurtbox_collision_impact_received_pcr2d)
@@ -30,6 +35,9 @@ func _ready() -> void:
 ## Override the function to apply the positional correction
 ## during the engine physics integration
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	if Engine.is_editor_hint():
+		return
+
 	if not freeze:
 		var trfm: Transform2D = state.transform
 		trfm.origin += _pendingPosCor
@@ -67,6 +75,12 @@ func apply_collision_response(result: PhysicsCollisionResult2D, side: PhysicsCol
 ## Uses the the fall-back filler
 func fill_collision_physics_info(info: PhysicsCollisionInfo2D, side: PhysicsCollisionInfo2D.Side) -> bool:
 	return info.fill_from_body(self, side)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not (get_node_or_null("%Hurtbox2D") is Hurtbox2D):
+		warnings.append("A unique Hurtbox2D child is required.")
+	return warnings
 
 #endregion
 

@@ -1,3 +1,4 @@
+@tool
 extends Node2D
 class_name VisualTrailVelocity
 
@@ -12,8 +13,8 @@ class_name VisualTrailVelocity
 ## The minimum velocity for the tral to form
 @export var minVelocity: float = 250.0
 
-## Reference segment used to create the trail segments
-@export var refSegment: VisualTrailSegment = null
+## Scene-owned reference segment used to create the trail segments.
+@onready var refSegment: VisualTrailSegment = get_node_or_null("%VisualTrailSegment") as VisualTrailSegment
 
 ## Maximum number of trail segments
 @export var maxSegments: int = 3
@@ -45,6 +46,9 @@ var runningIndex: int = 0
 
 #region System
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+
 	assert(
 		emitterPoint != null,
 		("VisualTrailVelocity: emitterPoint must be non-null.")
@@ -76,6 +80,9 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+
 	if not enabled:
 		if activeSegment:
 			_finish_active_segment()
@@ -118,6 +125,18 @@ func clear_trail() -> void:
 		segment.reset()
 		segment.visible = false
 		segment.set_physics_process(false)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not emitterPoint:
+		warnings.append("An emitter point is required.")
+	if not velOwner:
+		warnings.append("A velocity owner is required.")
+	elif not velOwner.get_property_list().any(func(property: Dictionary): return property.name == "velocity"):
+		warnings.append("The velocity owner must expose a velocity property.")
+	if not (get_node_or_null("%VisualTrailSegment") is VisualTrailSegment):
+		warnings.append("A unique VisualTrailSegment child is required.")
+	return warnings
 #endregion
 
 

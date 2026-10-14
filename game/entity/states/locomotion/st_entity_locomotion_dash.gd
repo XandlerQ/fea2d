@@ -63,7 +63,7 @@ func physics_update(delta: float) -> void:
 	
 	object.velocity = dash
 
-func enter(_previousState: String, _data := {}) -> void:
+func enter(_previousStateId: StringName, _data: Dictionary = {}) -> void:
 	completed = false
 	dashDirection = object.direction
 	dashTimer.start()

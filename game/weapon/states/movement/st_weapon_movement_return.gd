@@ -92,7 +92,7 @@ func physics_update(delta: float) -> void:
 	# Handle the rotation
 	_perform_rotation_target_spring_wielder(delta, kAng, drAng, wielderAngInh)
 
-func enter(_previousState: String, _data := {}) -> void:
+func enter(_previousStateId: StringName, _data: Dictionary = {}) -> void:
 	object.returned = false
 	initialReturnD = object.weapon.hand.global_position - object.get_handle_offset() - object.wPosition
 	returnD = initialReturnD

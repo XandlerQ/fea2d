@@ -31,7 +31,7 @@ region_rect = Rect2(0, 0, 1024, 1024)
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=1014010782]
 zoom = Vector2(4, 4)
 
-[node name="PhysicsObject2D" type="RigidBody2D" parent="." unique_id=331666556 node_paths=PackedStringArray("hurtbox")]
+[node name="PhysicsObject2D" type="RigidBody2D" parent="." unique_id=331666556]
 position = Vector2(0, -64)
 mass = 5.0
 physics_material_override = SubResource("PhysicsMaterial_ii5h2")
@@ -39,13 +39,13 @@ gravity_scale = 0.0
 linear_damp_mode = 1
 linear_damp = 3.0
 script = ExtResource("4_ii5h2")
-hurtbox = NodePath("Hurtbox2D")
 metadata/_custom_type_script = "uid://b1c5pl4o7fkkf"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PhysicsObject2D" unique_id=1548569663]
 shape = SubResource("CircleShape2D_ii5h2")
 
 [node name="Hurtbox2D" type="Area2D" parent="PhysicsObject2D" unique_id=1604191772 node_paths=PackedStringArray("hbOwner")]
+unique_name_in_owner = true
 script = ExtResource("4_rcri0")
 hbOwner = NodePath("..")
 metadata/_custom_type_script = "uid://chqk3txiu5ojg"

@@ -6,9 +6,9 @@ class_name Entity
 #endregion
 
 #region Exports
-## Physics state providers; locomotion also registers these references at startup.
-@export var lcRef: CEntityLocomotion = null
-@export var rcRef: CEntityRotation = null
+## Physics state providers, registered by the locomotion component at startup.
+var lcRef: CEntityLocomotion = null
+var rcRef: CEntityRotation = null
 ## Inverse mass
 @export var invMass: float = 1.
 ## Inverse inertia

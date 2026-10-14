@@ -1,3 +1,4 @@
+@tool
 extends Node
 # Entity rotation component.
 # Defines entity rotaiion state.
@@ -12,8 +13,8 @@ class_name CEntityRotation
 #region Exports
 ## Controlled entity
 @export var entity: CharacterBody2D = null
-## Locomotion Finite State Machine
-@export var fsml: FSML = null
+## Scene-owned rotation finite state machine.
+@onready var fsml: FSML = get_node_or_null("%RotationFSML") as FSML
 #endregion
 
 #region State
@@ -30,17 +31,38 @@ var globTarget: Vector2 = Vector2.ZERO
 #region Methods
 #region System
 func _ready() -> void:
-	pass
+	if Engine.is_editor_hint():
+		return
+
+	assert(entity != null,
+		("CharacterBody2D controlled by CEntityRotation must be non null.")
+	)
+	assert(fsml != null,
+		("Finite State Machine of CEntityRotation must be non null.")
+	)
 
 func _physics_process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+
 	fsml.physics_update(delta)
 	_control_object()
 #endregion
 
 #region Interface
-func request_state_change(newState: String, data: Dictionary = {}) -> void:
+func request_state_change(newStateId: StringName, data: Dictionary = {}) -> void:
+	if not fsml or not fsml.state:
+		return
 	if fsml.state.is_interruptible() or (not fsml.state.is_interruptible() and fsml.state.completed):
-		fsml.change_state(fsml.state, newState, data)
+		fsml.change_state(fsml.state, newStateId, data)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if not entity:
+		warnings.append("A controlled CharacterBody2D is required.")
+	if not (get_node_or_null("%RotationFSML") is FSML):
+		warnings.append("A unique RotationFSML child is required.")
+	return warnings
 #endregion
 
 #region Private
