@@ -35,6 +35,7 @@ zoom = Vector2(4, 4)
 physics_material_override = SubResource("PhysicsMaterial_2dd1r")
 gravity_scale = 0.0
 linear_damp = 5.0
+angular_damp = 5.0
 script = ExtResource("4_xyjxn")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BreakablePhysicsObject2D" unique_id=1548569663]

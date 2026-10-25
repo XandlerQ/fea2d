@@ -19,6 +19,11 @@ var resolved: bool = false
 ## Whether the objects were already moving apart
 var separating: bool = false
 
+## Source velocity at the collision point before collision response
+var cpVelS: Vector2 = Vector2.ZERO
+## Target velocity at the collision point before collision response
+var cpVelT: Vector2 = Vector2.ZERO
+
 ## Relative velocity of the collision points
 var relVel: Vector2 = Vector2.ZERO
 
@@ -39,13 +44,6 @@ var ImpLinT: Vector2 = Vector2.ZERO
 var ImpAngS: float = 0.
 ## Angular impulse to apply to the target
 var ImpAngT: float = 0.
-
-
-# dvS = sourceInverseMass * sourceImpulse
-# dvT = targetInverseMass * targetImpulse
-
-# domegaS = sourceInverseInertia * sourceAngularImpulse
-# domegaT = targetInverseInertia * targetAngularImpulse
 
 ## Linear velocity change of the source
 var dVelS: Vector2 = Vector2.ZERO

@@ -123,6 +123,23 @@ func generate_attack_context(targetObject: Node2D, relVel: Vector2) -> AttackCon
 	print(attackContext.damage)
 	return attackContext
 
+func generate_impact_context(
+	targetObject: Node2D,
+	collisionResult: PhysicsCollisionResult2D
+) -> ImpactContext2D:
+	if not collisionResult or not collisionResult.collisionInfo:
+		return null
+
+	var impactContext: ImpactContext2D = ImpactContext2D.new()
+	impactContext.source = self
+	impactContext.target = targetObject
+	impactContext.globalPosition = collisionResult.collisionInfo.globalPosition
+	impactContext.normal = collisionResult.collisionInfo.normal
+	impactContext.cpVelS = collisionResult.cpVelS
+	impactContext.cpVelT = collisionResult.cpVelT
+
+	return impactContext
+
 
 func get_velocity_at_point(point: Vector2) -> Vector2:
 	var localPoint: Vector2 = point - global_position
@@ -224,6 +241,14 @@ func _on_hitbox_hurtbox_collision_detected(collisionInfo: CollisionInfo2D) -> vo
 
 	if collisionResult.resolved and collisionResult.separating:
 		return
+
+	# Generate and pass the impact context to the Hurtbox
+	var impactContext: ImpactContext2D = generate_impact_context(
+		targetObject,
+		collisionResult
+	)
+	if impactContext:
+		hurtbox.receive_impact_context(impactContext)
 
 	# Generate the attack context
 	var relVel: Vector2 = Vector2.ZERO

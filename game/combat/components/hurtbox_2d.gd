@@ -6,6 +6,7 @@ class_name Hurtbox2D
 
 #region Signals
 signal attack_received(atkContext: AttackContext)
+signal impact_received(impactContext: ImpactContext2D)
 
 signal collision_impact_received_pcr2d(collisionResult: PhysicsCollisionResult2D)
 #endregion
@@ -31,6 +32,14 @@ func receive_attack_context(atkContext: AttackContext) -> bool:
 		return false
 
 	attack_received.emit(atkContext)
+	return true
+
+## Passes a valid impact context to the listeners
+func receive_impact_context(impactContext: ImpactContext2D) -> bool:
+	if not impactContext:
+		return false
+
+	impact_received.emit(impactContext)
 	return true
 
 func receive_collision_impact_pcr2d(collisionResult: PhysicsCollisionResult2D) -> bool:

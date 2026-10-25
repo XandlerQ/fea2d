@@ -53,13 +53,13 @@ static func process_collision(collisionInfo: PhysicsCollisionInfo2D) -> PhysicsC
 	_compute_position_correction(result, normal, invMassS, invMassT)
 
 	# Compute the velocities of both objects at the collision point
-	var cpVelS: Vector2 = collisionInfo.sourceVelocity
-	cpVelS += _angular_velocity_at_rel_point(collisionInfo.sourceAngularVelocity, rS)
+	result.cpVelS = collisionInfo.sourceVelocity
+	result.cpVelS += _angular_velocity_at_rel_point(collisionInfo.sourceAngularVelocity, rS)
 
-	var cpVelT: Vector2 = collisionInfo.targetVelocity
-	cpVelT += _angular_velocity_at_rel_point(collisionInfo.targetAngularVelocity, rT)
+	result.cpVelT = collisionInfo.targetVelocity
+	result.cpVelT += _angular_velocity_at_rel_point(collisionInfo.targetAngularVelocity, rT)
 
-	var relVel: Vector2 = cpVelS - cpVelT
+	var relVel: Vector2 = result.cpVelS - result.cpVelT
 	var relVelN: float = relVel.dot(normal)
 
 	result.relVel = relVel
