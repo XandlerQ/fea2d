@@ -69,8 +69,8 @@ func apply_collision_response(result: PhysicsCollisionResult2D, side: PhysicsCol
 	
 	apply_impulse(impulse, result.collisionInfo.globalPosition - global_position)
 	# apply_impulse(Vector2(1., 0.), result.collisionInfo.globalPosition - global_position)
-	print("Applied impulse")
-	print(impulse)
+	# print("Applied impulse")
+	# print(impulse)
 
 ## Uses the the fall-back filler
 func fill_collision_physics_info(info: PhysicsCollisionInfo2D, side: PhysicsCollisionInfo2D.Side) -> bool:

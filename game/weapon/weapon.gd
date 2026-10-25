@@ -120,7 +120,7 @@ func generate_attack_context(targetObject: Node2D, relVel: Vector2) -> AttackCon
 	# Compute the damage based on the relative velocity at the collision point
 	# taking the geometry of the weapon into account
 	attackContext.damage = weaponStats.damage * relVel.length()
-	
+	print(attackContext.damage)
 	return attackContext
 
 

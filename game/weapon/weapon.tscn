@@ -31,6 +31,7 @@ point_count = 2
 [node name="Weapon" type="Node2D" unique_id=1865877970]
 script = ExtResource("1_jej8l")
 weaponStats = ExtResource("2_njmmr")
+friction = 0.5
 
 [node name="TrailMarker" type="Marker2D" parent="." unique_id=704847894]
 position = Vector2(14, 0)
