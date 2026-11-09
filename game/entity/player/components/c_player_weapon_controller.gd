@@ -64,8 +64,7 @@ func _physics_process(_delta: float) -> void:
 	else:
 		# For the player the weapon target is the global mouse position
 		# Save the target for the weapon movement stated to use
-		# TODO: move to the player input component to handle controller input as well
-		weapon.wmrc.wTarget = cpai.get_targetted_point()
+		weapon.wmrc.wTarget = cpai.get_global_targetted_point()
 
 		weapon.wmrc.request_movement_state_change(STATE_ATTACK)
 		# print("Attack")
@@ -80,7 +79,7 @@ func _physics_process(_delta: float) -> void:
 	else:
 		# Compute a rotation as a ratia of targeted point rotation
 		# and the rotation derived from weapon location
-		var targetPRotation: float = (cpai.get_targetted_point() - player.global_position).angle()
+		var targetPRotation: float = (cpai.get_global_targetted_point() - player.global_position).angle()
 		var weaponPosRotation: float = (weapon.global_position - player.global_position).angle()
 
 		var targetRotation: float = lerp_angle(weaponPosRotation, targetPRotation, tRRatio)

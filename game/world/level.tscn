@@ -1,12 +1,37 @@
 [gd_scene format=3 uid="uid://dn4iaeddm5iol"]
 
-[ext_resource type="PackedScene" uid="uid://y0gefryo127j" path="res://game/entity/player/player.tscn" id="1_2q6dc"]
 [ext_resource type="Script" uid="uid://bkhqwlrunm20r" path="res://game/world/level.gd" id="1_w7c3h"]
 [ext_resource type="Texture2D" uid="uid://xr518t68maav" path="res://ext/sprites/tiles/tech/grid_1m_grey.png" id="2_w8frs"]
+[ext_resource type="Script" uid="uid://yedn2v65x7h1" path="res://game/entity/player/player.gd" id="3_smrfb"]
 [ext_resource type="Script" uid="uid://chqk3txiu5ojg" path="res://game/combat/components/hurtbox_2d.gd" id="4_rcri0"]
 [ext_resource type="Script" uid="uid://qncbi7ism0lv" path="res://game/object/physics_object/breakable_physics_object_2d.gd" id="4_xyjxn"]
 [ext_resource type="Texture2D" uid="uid://d2gmbmaajxdsk" path="res://ext/sprites/entities/agent.png" id="5_ii5h2"]
+[ext_resource type="Script" uid="uid://wflu8l65ugd2" path="res://game/entity/player/components/c_player_action_input.gd" id="5_lumtu"]
 [ext_resource type="Script" uid="uid://d3fibxsp1vr5t" path="res://game/combat/components/health_component.gd" id="6_health"]
+[ext_resource type="Script" uid="uid://b202ovfph2rnv" path="res://game/entity/player/components/c_player_locomotion_input.gd" id="6_l4am8"]
+[ext_resource type="Script" uid="uid://dj815e8a5w4lb" path="res://game/entity/player/components/c_player_locomotion_controller.gd" id="7_83q46"]
+[ext_resource type="PackedScene" uid="uid://d2nkwwqu71m7r" path="res://game/ui/weapon_control_visualizer.tscn" id="8_4g85k"]
+[ext_resource type="Script" uid="uid://bi6gl7xwno8r1" path="res://game/entity/components/c_entity_locomotion.gd" id="8_wsybi"]
+[ext_resource type="Script" uid="uid://c7eb0t2ouwkrs" path="res://core/state_machine/fsml.gd" id="9_j420u"]
+[ext_resource type="Script" uid="uid://fg1h0i4i0fbi" path="res://game/entity/states/locomotion/st_entity_locomotion_idle.gd" id="10_lql7v"]
+[ext_resource type="Script" uid="uid://ycnwt40iqv50" path="res://game/entity/states/locomotion/st_entity_locomotion_walk.gd" id="11_fy1vd"]
+[ext_resource type="Script" uid="uid://sskl87pb5gph" path="res://game/entity/states/locomotion/st_entity_locomotion_sprint.gd" id="12_8wrxi"]
+[ext_resource type="Script" uid="uid://p7errmqm5yxd" path="res://game/entity/states/locomotion/st_entity_locomotion_dash.gd" id="13_0pdiu"]
+[ext_resource type="Script" uid="uid://c1mr4j4tn345w" path="res://game/entity/player/components/c_player_rotation_controller.gd" id="14_l6gl1"]
+[ext_resource type="Script" uid="uid://dwy5rbfbodmmk" path="res://game/entity/components/c_entity_rotation.gd" id="15_oqpyq"]
+[ext_resource type="Script" uid="uid://pnbiunwg4ym1" path="res://core/motion/states/rotation/st_rotation_target_thf.gd" id="16_4yeht"]
+[ext_resource type="Script" uid="uid://wjpiv3authl6" path="res://core/motion/states/rotation/st_rotation_lookat_thf.gd" id="17_curas"]
+[ext_resource type="Script" uid="uid://c1bdr2d3rljsm" path="res://game/entity/components/hand.gd" id="18_8h5e1"]
+[ext_resource type="PackedScene" uid="uid://buvgpgvki638m" path="res://game/weapon/weapon.tscn" id="19_r1m00"]
+[ext_resource type="Texture2D" uid="uid://drr4qj2ywa4vk" path="res://ext/sprites/tech/marker_p.png" id="20_jncyg"]
+[ext_resource type="Script" uid="uid://ctb2i8x2rbxyn" path="res://game/entity/player/components/c_player_weapon_controller.gd" id="21_0rr4r"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2dd1r"]
+radius = 8.0
+
+[sub_resource type="Curve" id="Curve_2dd1r"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.44274807), -1.7611774, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_2dd1r"]
 bounce = 0.5
@@ -26,7 +51,116 @@ texture = ExtResource("2_w8frs")
 region_enabled = true
 region_rect = Rect2(0, 0, 1024, 1024)
 
-[node name="Player" parent="." unique_id=675430024 instance=ExtResource("1_2q6dc")]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=675430024]
+script = ExtResource("3_smrfb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1734462446]
+shape = SubResource("CircleShape2D_2dd1r")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=1818673378]
+texture = ExtResource("5_ii5h2")
+
+[node name="CPlayerActionInput" type="Node" parent="Player" unique_id=1783718332 node_paths=PackedStringArray("player")]
+script = ExtResource("5_lumtu")
+player = NodePath("..")
+targetCircleCenterRatio = null
+targetCircleRadiusRatio = null
+metadata/_custom_type_script = "uid://wflu8l65ugd2"
+
+[node name="CPlayerLocomotionInput" type="Node" parent="Player" unique_id=1425326394]
+script = ExtResource("6_l4am8")
+
+[node name="CPlayerLocomotionController" type="Node" parent="Player" unique_id=1670402901 node_paths=PackedStringArray("pli", "cel")]
+script = ExtResource("7_83q46")
+pli = NodePath("../CPlayerLocomotionInput")
+cel = NodePath("../CEntityLocomotion")
+
+[node name="CEntityLocomotion" type="Node" parent="Player" unique_id=11193938 node_paths=PackedStringArray("entity", "rcRef")]
+script = ExtResource("8_wsybi")
+entity = NodePath("..")
+rcRef = NodePath("../CEntityRotation")
+
+[node name="LocomotionFSML" type="Node" parent="Player/CEntityLocomotion" unique_id=192479242 node_paths=PackedStringArray("initialState")]
+unique_name_in_owner = true
+script = ExtResource("9_j420u")
+initialState = NodePath("Idle")
+manuallyDriven = true
+
+[node name="Idle" type="Node" parent="Player/CEntityLocomotion/LocomotionFSML" unique_id=977794275 node_paths=PackedStringArray("object")]
+script = ExtResource("10_lql7v")
+object = NodePath("../..")
+stateId = &"idle"
+
+[node name="Walk" type="Node" parent="Player/CEntityLocomotion/LocomotionFSML" unique_id=2103482589 node_paths=PackedStringArray("object")]
+script = ExtResource("11_fy1vd")
+object = NodePath("../..")
+stateId = &"walk"
+
+[node name="Sprint" type="Node" parent="Player/CEntityLocomotion/LocomotionFSML" unique_id=146371784 node_paths=PackedStringArray("object")]
+script = ExtResource("12_8wrxi")
+object = NodePath("../..")
+stateId = &"sprint"
+metadata/_custom_type_script = "uid://sskl87pb5gph"
+
+[node name="Dash" type="Node" parent="Player/CEntityLocomotion/LocomotionFSML" unique_id=423293654 node_paths=PackedStringArray("object")]
+script = ExtResource("13_0pdiu")
+dashDuration = 0.11
+dashMagnitude = 360.0
+dashSpeedCurve = SubResource("Curve_2dd1r")
+object = NodePath("../..")
+stateId = &"dash"
+metadata/_custom_type_script = "uid://p7errmqm5yxd"
+
+[node name="CPlayerRotationController" type="Node" parent="Player" unique_id=390695162 node_paths=PackedStringArray("cer", "cel", "cpai")]
+script = ExtResource("14_l6gl1")
+cer = NodePath("../CEntityRotation")
+cel = NodePath("../CEntityLocomotion")
+cpai = NodePath("../CPlayerActionInput")
+metadata/_custom_type_script = "uid://c1mr4j4tn345w"
+
+[node name="CEntityRotation" type="Node" parent="Player" unique_id=829356750 node_paths=PackedStringArray("entity")]
+script = ExtResource("15_oqpyq")
+entity = NodePath("..")
+
+[node name="RotationFSML" type="Node" parent="Player/CEntityRotation" unique_id=930320857 node_paths=PackedStringArray("initialState")]
+unique_name_in_owner = true
+script = ExtResource("9_j420u")
+initialState = NodePath("TargetTHF")
+manuallyDriven = true
+metadata/_custom_type_script = "uid://c7eb0t2ouwkrs"
+
+[node name="TargetTHF" type="Node" parent="Player/CEntityRotation/RotationFSML" unique_id=1042209441 node_paths=PackedStringArray("object")]
+script = ExtResource("16_4yeht")
+object = NodePath("../..")
+stateId = &"target_thf"
+metadata/_custom_type_script = "uid://pnbiunwg4ym1"
+
+[node name="LookatTHF" type="Node" parent="Player/CEntityRotation/RotationFSML" unique_id=794199346 node_paths=PackedStringArray("object")]
+script = ExtResource("17_curas")
+object = NodePath("../..")
+stateId = &"look_at_thf"
+metadata/_custom_type_script = "uid://wjpiv3authl6"
+
+[node name="Hand" type="Node2D" parent="Player" unique_id=930788975]
+position = Vector2(0, 8)
+rotation = 0.34906584
+script = ExtResource("18_8h5e1")
+
+[node name="Weapon" parent="Player/Hand" unique_id=1865877970 node_paths=PackedStringArray("hand", "lcRef", "rcRef") instance=ExtResource("19_r1m00")]
+hand = NodePath("..")
+lcRef = NodePath("../../CEntityLocomotion")
+rcRef = NodePath("../../CEntityRotation")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player/Hand" unique_id=334297109]
+texture = ExtResource("20_jncyg")
+
+[node name="CPlayerWeaponController" type="Node" parent="Player" unique_id=423561813 node_paths=PackedStringArray("player", "weapon", "cpai")]
+script = ExtResource("21_0rr4r")
+player = NodePath("..")
+weapon = NodePath("../Hand/Weapon")
+cpai = NodePath("../CPlayerActionInput")
+tRRatio = 0.2
+metadata/_custom_type_script = "uid://ctb2i8x2rbxyn"
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=1014010782]
 zoom = Vector2(4, 4)
@@ -62,3 +196,8 @@ script = ExtResource("6_health")
 hurtboxes = [NodePath("../Hurtbox2D")]
 maxHealth = 10000.0
 metadata/_custom_type_script = "uid://d3fibxsp1vr5t"
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=2042113513]
+
+[node name="WeaponControlVisualizer" parent="UI" unique_id=2925102 node_paths=PackedStringArray("cpai") instance=ExtResource("8_4g85k")]
+cpai = NodePath("../../Player/CPlayerActionInput")

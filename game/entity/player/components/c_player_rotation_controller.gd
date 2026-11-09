@@ -53,7 +53,7 @@ func _physics_process(_delta: float) -> void:
 	var attackInput = cpai.get_attack_pressed()
 
 	if attackInput:
-		cer.globTarget = cpai.get_targetted_point()
+		cer.globTarget = cpai.get_global_targetted_point()
 		cer.request_state_change(STATE_LOOK_AT)
 	else:
 		cer.targetRotation = cel._lnzDirection.angle()
